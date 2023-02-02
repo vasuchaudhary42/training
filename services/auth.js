@@ -7,7 +7,7 @@ const asde = require("../helpers/asde");
 const AUTH_SECRET_KEY = "BYJUS_EXAM_PREP";
 async function registerUser(user, password) {
     const [error, userDetails] = await asde(userService.getUserByEmail(user.email));
-    console.log(userDetails)
+
     if(error) {
         console.log({
             message: 'Some error occurred while fetching user by email',
