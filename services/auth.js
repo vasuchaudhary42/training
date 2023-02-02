@@ -74,6 +74,74 @@ async function registerUser(user, password) {
         });
 }
 
+async function login(email, password) {
+    const [error, user] = await asde(userService.getUserByEmail(email));
+
+    if(error) {
+        console.log({
+            message: 'Some error occurred while fetching user by email',
+            error,
+            email,
+        });
+
+        return Promise.reject({
+            status: 500,
+            reason: 'Some error occurred',
+            isCustomError: true,
+            isAlreadyLogged: true,
+        });
+    }
+
+    if(!user || !user.userid) {
+        console.log({
+            message: 'Please sign-up first',
+            email,
+        });
+
+        return Promise.reject({
+            status: 401,
+            reason: 'Please sign-up first',
+            isCustomError: true,
+            isAlreadyLogged: true,
+        });
+    }
+
+    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+
+    const [passwordError, userPasswordHash] = await asde(authModel.getPassword(email));
+
+    if(passwordError) {
+        console.log({
+            message: 'Some error occurred while fetching user auth',
+            error: passwordError,
+            email,
+        });
+
+        return Promise.reject({
+            status: 500,
+            reason: 'Some error occurred',
+            isCustomError: true,
+            isAlreadyLogged: true,
+        });
+    }
+
+    if(passwordHash === userPasswordHash) {
+        return user;
+    }
+
+    console.log({
+        message: 'Password doesn\'t match',
+        email,
+    });
+
+    return Promise.reject({
+        status: 401,
+        reason: 'Please enter valid username and password',
+        isCustomError: true,
+        isAlreadyLogged: true,
+    });
+}
+
 async function getAuthToken(user) {
     return authHelper.generateJWT({
         userid: user.userid,
@@ -86,6 +154,7 @@ async function verifyAuthToken(token) {
 
 module.exports = {
     registerUser,
+    login,
     getAuthToken,
     verifyAuthToken,
 };

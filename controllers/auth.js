@@ -77,6 +77,70 @@ async function registration(req, res) {
     });
 }
 
+async function login(req, res) {
+    const {
+        email,
+        password,
+    } = req.body;
+
+    if(!email || !password) {
+        return res.status(400).json({
+            reason: 'Please enter valid email and password',
+        });
+    }
+
+    const [error, loginUser] = await asde(authService.login(email, password));
+
+    if(error) {
+        if(!error.isAlreadyLogged) {
+            console.log({
+                message: 'Login Failed!',
+                email,
+                error,
+            });
+        }
+
+        return res.status((error.isCustomError && error.status) || 401).json({
+            reason: (error.isCustomError && error.reason) || 'Some error occurred',
+        });
+    }
+
+    if(loginUser && loginUser.userid) {
+        const [generateTokenError, authToken] = await asde(authService.getAuthToken(loginUser));
+
+        if(generateTokenError) {
+            if(!generateTokenError.isAlreadyLogged) {
+                console.log({
+                    message: 'Some error occurred while generating token',
+                    user: loginUser,
+                    error: generateTokenError,
+                });
+            }
+
+            return res.status((error.isCustomError && error.status) || 401).json({
+                reason: (error.isCustomError && error.reason) || 'Some error occurred',
+            });
+        }
+
+        if (authToken) {
+            return res.status(200).json({
+                user: loginUser,
+                token: authToken,
+            });
+        }
+    }
+
+    console.log({
+        message: 'Some error occurred while login',
+        email,
+    });
+
+    return res.status(500).json({
+        reason: 'Some error occurred',
+    });
+}
+
 module.exports = {
     registration,
+    login,
 };
