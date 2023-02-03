@@ -15,7 +15,16 @@ async function getUserByEmail(email) {
         .then((res) => res[0] || null);
 }
 
+async function getUser(userid) {
+    return knex('users')
+        .where({
+            userid,
+        })
+        .then((res) => res[0] || null);
+}
+
 module.exports = {
     createUser,
     getUserByEmail,
+    getUser,
 };

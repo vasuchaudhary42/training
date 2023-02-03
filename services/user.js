@@ -10,4 +10,5 @@ module.exports = {
         });
     },
     getUserByEmail: userModel.getUserByEmail,
+    getUser: userModel.getUser,
 };
