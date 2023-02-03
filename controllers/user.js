@@ -3,7 +3,7 @@ module.exports = {
     me: async (req, res) => {
         getUser(req.session.userid)
             .then((user) => {
-                if(user && user.id) {
+                if(user && user.userid) {
                     return res.status(200).json(user);
                 }
 

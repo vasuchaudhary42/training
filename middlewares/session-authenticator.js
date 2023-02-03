@@ -10,7 +10,7 @@ module.exports = async (request, res, next) => {
     const token = request.headers.authorization.split(' ')[1];
 
     const [error, payload] = await asde(authService.verifyAuthToken(token));
-    console.log(error, payload)
+
     if (error || !payload) {
         return res.status(401).send({ status: 401, message: 'Unauthorized Request' });
     }
