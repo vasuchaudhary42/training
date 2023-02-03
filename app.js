@@ -10,10 +10,6 @@ app.use(
     })
 );
 
-app.get('/', (req, res) => {
-    res.json({'message': 'ok'});
-});
-
-app.use((err, req, res) => res.status(err.statusCode || 500).json({'message': err.message}));
+app.get('/', (req, res) => res.json({'message': 'ok'}));
 
 app.listen(port, hostname, () => console.log(`Server running at http://${hostname}:${port}/`));
