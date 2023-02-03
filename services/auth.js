@@ -75,7 +75,9 @@ async function registerUser(user, password) {
 }
 
 async function getAuthToken(user) {
-    return authHelper.generateJWT(user, AUTH_SECRET_KEY);
+    return authHelper.generateJWT({
+        userid: user.userid,
+    }, AUTH_SECRET_KEY);
 }
 
 async function verifyAuthToken(token) {
