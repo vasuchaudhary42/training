@@ -23,8 +23,16 @@ async function getUser(userid) {
         .then((res) => res[0] || null);
 }
 
+async function updateUser(userid, updateDetails) {
+    return knex('users')
+        .returning('*')
+        .where({ userid })
+        .update(updateDetails)
+        .then((res) => res[0] || null);
+}
 module.exports = {
     createUser,
     getUserByEmail,
     getUser,
+    updateUser,
 };
